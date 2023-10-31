@@ -9,6 +9,7 @@ import { useAccount, useWalletClient, usePublicClient } from "wagmi";
 import { getContract, getWalletClient } from "@wagmi/core";
 import { abiSUM, abiDIV } from "../contracts";
 import { ethers, BrowserProvider } from "ethers";
+import { useWaitForTransaction } from "wagmi";
 
 const GlobalContext = createContext();
 
@@ -27,53 +28,84 @@ export const GlobalProvider = ({ children }) => {
     contract: null,
   });
 
-  let signer;
-  let provider;
+  const [errorMessage, seterrorMessage] = useState("");
+  const [tx, setTx] = useState("");
+  const { isLoading, isSuccess, error } = useWaitForTransaction({
+    hash: tx.hash,
+  });
 
-  try {
-    const { ethereum } = window;
+  const contractInstance = async () => {
+    const contractAddressSUM = import.meta.env.VITE_CONTRACT_ADDRESS_SUM;
+    const contractAddressDIV = import.meta.env.VITE_CONTRACT_ADDRESS_DIV;
+    const contractABISUM = abiSUM;
+    const contractABIDIV = abiDIV;
+    try {
+      const { ethereum } = window;
 
-    if (ethereum) {
-      provider = new ethers.BrowserProvider(window.ethereum);
-      signer = provider.getSigner();
-    } else {
-      alert("Please install metamask");
+      if (ethereum) {
+        const provider = new ethers.BrowserProvider(ethereum);
+        const signer = await provider.getSigner();
+        const contractSUM = new ethers.Contract(
+          contractAddressSUM,
+          contractABISUM,
+          signer
+        );
+        setsumState({
+          provider: provider,
+          signer: signer,
+          contract: contractSUM,
+        });
+        console.log("ContractSUM", contractSUM);
+
+        const contractDIV = new ethers.Contract(
+          contractAddressDIV,
+          contractABIDIV,
+          signer
+        );
+        setdivState({
+          provider: provider,
+          signer: signer,
+          contract: contractDIV,
+        });
+        console.log("ContractDIV", contractDIV);
+      } else {
+        alert("Please install metamask");
+      }
+    } catch (error) {
+      console.log(error);
     }
-  } catch (error) {
-    console.log(error);
-  }
-
-  const sumContractIns = async () => {
-    const sumAddress = import.meta.env.VITE_CONTRACT_ADDRESS_SUM;
-    const sumContract = getContract(sumAddress, abiSUM, signer);
-    return sumContract;
-  };
-
-  const divContractIns = async () => {
-    const divAddress = import.meta.env.VITE_CONTRACT_ADDRESS_DIV;
-    const divContract = getContract(divAddress, abiDIV, signer);
-    return divContract;
-  };
-
-  const getContract = async (address, abi, signer) => {
-    const contract = new ethers.Contract(address, abi, signer);
-    return contract;
   };
 
   useEffect(() => {
-    const contractSum = sumContractIns();
-    const contractDiv = divContractIns();
-
-    if (address && contractSum && contractDiv) {
-      setsumState({ provider, signer, contractSum });
-      setdivState({ provider, signer, contractDiv });
+    if (isConnected) {
+      contractInstance();
+      console.log("Connected");
     }
-  }, []);
+  }, [isConnected]);
 
-  console.log(isConnected, isDisconnected, address);
+  // useEffect(() => {
+  //   if (errorMessage) {
+  //     const parsedErrorMessage = errorMessage?.reason
+  //       ?.slice("execution reverted: ".length)
+  //       .slice(0, -1);
+  //     if (parsedErrorMessage) {
+  //       console.log(parsedErrorMessage);
+  //       alert(parsedErrorMessage);
+  //       // setShowAlert({
+  //       //   status: true,
+  //       //   type: "failure",
+  //       //   message: parsedErrorMessage,
+  //       // });
+  //     }
+  //   }
+  // }, [errorMessage]);
 
-  console.log("sumContract", sumState);
-  console.log("divContract", divState);
+  // useEffect(() => {
+  //   console.log("tx", tx);
+  //   console.log("isLoading", isLoading);
+  //   console.log("isSuccess", isSuccess);
+  //   console.log("error", error);
+  // }, [tx, isLoading, isSuccess, error]);
 
   return (
     <GlobalContext.Provider
@@ -83,6 +115,11 @@ export const GlobalProvider = ({ children }) => {
         isDisconnected,
         sumState,
         divState,
+        tx,
+        setTx,
+        error,
+        isLoading,
+        isSuccess,
       }}
     >
       {children}
