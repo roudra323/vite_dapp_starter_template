@@ -64,7 +64,7 @@ function App() {
   };
 
   return (
-    <div className="app">
+    <div>
       <div
         style={{
           display: "flex",
@@ -85,6 +85,13 @@ function App() {
       <input type="file" accept="image/*" onChange={handleImageUpload} />
       {imageURI && <img src={imageURI} alt="Uploaded" />}
       {imageURI && <h1>{imageURI}</h1>}
+      <h1 className=" bg-red-600">Hello World</h1>
+      <div className="form-control">
+        <label className="label cursor-pointer">
+          <span className="label-text">Remember me</span>
+          <input type="checkbox" checked="checked" className="checkbox" />
+        </label>
+      </div>
     </div>
   );
 }
