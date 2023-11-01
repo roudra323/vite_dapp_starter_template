@@ -1,13 +1,20 @@
-# Sample Hardhat Project
+# .env
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+SEPOLIA_PRIVATE_KEY = ""
 
-Try running some of the following tasks:
+ALCHEMY_SEPOLIA_API_KEY =""
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
-```
+OWNER_ADDRESS = ""
+
+VITE_CONTRACT_ADDRESS = ""
+
+ETHERSCAN_API_KEY = ""
+
+VITE_RAINBOWKIT_KEY = ""
+
+
+# Deploy smart contract
+`npx hardhat run --network sepoila scripts/deploy.js`
+
+# Verify smart contract
+`npx hardhat verify CONTRACT_ADDR --network sepoila`
