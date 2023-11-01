@@ -1,8 +1,20 @@
-# React + Vite
+# .env
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+SEPOLIA_PRIVATE_KEY = ""
 
-Currently, two official plugins are available:
+ALCHEMY_SEPOLIA_API_KEY =""
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+OWNER_ADDRESS = ""
+
+VITE_CONTRACT_ADDRESS = ""
+
+ETHERSCAN_API_KEY = ""
+
+VITE_RAINBOWKIT_KEY = ""
+
+
+# Deploy smart contract
+`npx hardhat run --network sepoila scripts/deploy.js`
+
+# Verify smart contract
+`npx hardhat verify CONTRACT_ADDR --network sepoila`
